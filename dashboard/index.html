@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Renewal Desk — Ops Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0D1117;
+    --panel:#141B24;
+    --panel-raised:#182130;
+    --hairline:#253140;
+    --paper:#DCE4EC;
+    --muted:#6B7A8C;
+    --teal:#3ECF8E;
+    --amber:#F0A63A;
+    --red:#E5484D;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 28px;
+    border-bottom:1px solid var(--hairline);
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  .brand .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    color:var(--muted);
+    text-transform:uppercase;
+  }
+  .brand h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:22px;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .api-config{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .api-config input{
+    background:var(--panel);
+    border:1px solid var(--hairline);
+    color:var(--paper);
+    padding:7px 10px;
+    border-radius:6px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    width:260px;
+  }
+  .api-config input:focus-visible{outline:2px solid var(--teal); outline-offset:1px;}
+  .api-config button{
+    background:var(--panel-raised);
+    border:1px solid var(--hairline);
+    color:var(--paper);
+    padding:7px 12px;
+    border-radius:6px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    cursor:pointer;
+  }
+  .api-config button:hover{border-color:var(--teal);}
+  .api-config button:focus-visible{outline:2px solid var(--teal); outline-offset:1px;}
+
+  .board{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:1px;
+    background:var(--hairline);
+  }
+  @media (max-width:980px){
+    .board{grid-template-columns:1fr;}
+  }
+
+  .panel{
+    background:var(--ink);
+    padding:22px 24px 28px;
+    min-height:70vh;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .panel-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .panel-title{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:15px;
+    margin:0;
+  }
+  .panel-sub{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--muted);
+    margin:2px 0 0;
+  }
+
+  textarea, input[type=text]{
+    width:100%;
+    background:var(--panel);
+    border:1px solid var(--hairline);
+    color:var(--paper);
+    padding:12px;
+    border-radius:8px;
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13.5px;
+    resize:vertical;
+  }
+  textarea:focus-visible, input[type=text]:focus-visible{
+    outline:2px solid var(--teal);
+    outline-offset:1px;
+  }
+  .action-row{display:flex; gap:8px;}
+  .btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.03em;
+    background:var(--teal);
+    color:#06251A;
+    border:none;
+    padding:10px 16px;
+    border-radius:7px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .btn:hover{filter:brightness(1.08);}
+  .btn:focus-visible{outline:2px solid var(--paper); outline-offset:2px;}
+  .btn[disabled]{opacity:0.5; cursor:default;}
+
+  .empty{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+    border:1px dashed var(--hairline);
+    border-radius:8px;
+    padding:16px;
+    text-align:center;
+  }
+
+  /* Call log rows */
+  .log-list{display:flex; flex-direction:column; gap:8px; overflow-y:auto; max-height:60vh;}
+  .log-row{
+    background:var(--panel);
+    border:1px solid var(--hairline);
+    border-radius:8px;
+    padding:11px 13px;
+  }
+  .log-row-top{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .log-name{font-weight:500; font-size:13.5px;}
+  .log-time{font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--muted);}
+  .pill{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:0.02em;
+    padding:2px 8px;
+    border-radius:99px;
+    display:inline-block;
+    margin-top:6px;
+  }
+  .pill-renewed{background:rgba(62,207,142,0.15); color:var(--teal); border:1px solid rgba(62,207,142,0.35);}
+  .pill-soon{background:rgba(240,166,58,0.15); color:var(--amber); border:1px solid rgba(240,166,58,0.35);}
+  .pill-followup{background:rgba(240,166,58,0.15); color:var(--amber); border:1px solid rgba(240,166,58,0.35);}
+  .pill-not{background:rgba(229,72,77,0.15); color:var(--red); border:1px solid rgba(229,72,77,0.35);}
+  .pill-already{background:rgba(107,122,140,0.15); color:var(--muted); border:1px solid var(--hairline);}
+  .log-notes{font-size:12px; color:var(--muted); margin-top:6px;}
+  .escalated-flag{font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--red); margin-left:6px;}
+
+  /* KB result card */
+  .result-card{
+    border-radius:8px;
+    padding:14px;
+    border:1px solid var(--hairline);
+    background:var(--panel);
+  }
+  .result-card.grounded{border-color:rgba(62,207,142,0.4);}
+  .result-card.ungrounded{border-color:rgba(229,72,77,0.4);}
+  .result-status{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-bottom:8px;
+  }
+  .dot{width:7px; height:7px; border-radius:50%; display:inline-block;}
+  .dot-teal{background:var(--teal);}
+  .dot-red{background:var(--red);}
+  .result-body{font-size:13.5px; line-height:1.5;}
+  .result-meta{font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--muted); margin-top:10px;}
+
+  /* Nudge feed */
+  .nudge-feed{display:flex; flex-direction:column; gap:10px; overflow-y:auto; max-height:60vh;}
+  .nudge-card{
+    background:var(--panel);
+    border-left:3px solid var(--amber);
+    border-radius:0 8px 8px 0;
+    padding:10px 13px;
+    position:relative;
+  }
+  .nudge-top{display:flex; justify-content:space-between; align-items:baseline; gap:8px;}
+  .nudge-type{font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--amber); letter-spacing:0.04em; text-transform:uppercase;}
+  .nudge-stamp{font-family:'IBM Plex Mono', monospace; font-size:9.5px; color:var(--muted);}
+  .nudge-msg{font-size:13px; margin-top:5px;}
+  .nudge-conf{font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--muted); margin-top:6px;}
+  .latency-line{font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:var(--muted);}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--hairline); border-radius:8px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="eyebrow">Renewal Desk</span>
+    <h1>Ops Console</h1>
+  </div>
+  <div class="api-config">
+    <label for="apiBase">API</label>
+    <input type="text" id="apiBase" placeholder="https://your-app.onrender.com" />
+    <button id="saveApi">Save</button>
+  </div>
+</div>
+
+<div class="board">
+
+  <!-- Call Log -->
+  <section class="panel" aria-labelledby="log-title">
+    <div class="panel-head">
+      <div>
+        <h2 class="panel-title" id="log-title">Call Log</h2>
+        <p class="panel-sub">from crm_log.jsonl</p>
+      </div>
+      <button class="btn" id="refreshLogs" style="background:var(--panel-raised); color:var(--paper); border:1px solid var(--hairline);">Refresh</button>
+    </div>
+    <div class="log-list" id="logList">
+      <div class="empty">Set the API URL above to load call outcomes.</div>
+    </div>
+  </section>
+
+  <!-- KB Grounding Tester -->
+  <section class="panel" aria-labelledby="kb-title">
+    <div>
+      <h2 class="panel-title" id="kb-title">KB Grounding Test</h2>
+      <p class="panel-sub">what kb_search would return</p>
+    </div>
+    <input type="text" id="kbQuery" placeholder="e.g. Can I pay my premium monthly?" />
+    <div class="action-row">
+      <button class="btn" id="kbSubmit">Search</button>
+    </div>
+    <div id="kbResult"></div>
+  </section>
+
+  <!-- Live Nudge Feed -->
+  <section class="panel" aria-labelledby="nudge-title">
+    <div>
+      <h2 class="panel-title" id="nudge-title">Live Nudge Feed</h2>
+      <p class="panel-sub">paste a transcript chunk to test Q4 signals</p>
+    </div>
+    <textarea id="transcriptInput" rows="4" placeholder="e.g. This is too expensive, I might switch to another insurer."></textarea>
+    <div class="action-row">
+      <button class="btn" id="insightSubmit">Analyze</button>
+    </div>
+    <div id="latencyLine" class="latency-line"></div>
+    <div class="nudge-feed" id="nudgeFeed">
+      <div class="empty">No nudges yet — analyze a transcript chunk above.</div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const apiInput = $('apiBase');
+  apiInput.value = localStorage.getItem('renewalDeskApi') || '';
+
+  $('saveApi').addEventListener('click', () => {
+    localStorage.setItem('renewalDeskApi', apiInput.value.trim());
+    loadLogs();
+  });
+
+  function apiBase(){
+    return (apiInput.value || localStorage.getItem('renewalDeskApi') || '').replace(/\/$/, '');
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function pillClass(intent){
+    switch(intent){
+      case 'Renewed': return 'pill-renewed';
+      case 'Renewing soon': return 'pill-soon';
+      case 'Needs follow-up': return 'pill-followup';
+      case 'Not renewing': return 'pill-not';
+      case 'Already renewed': return 'pill-already';
+      default: return 'pill-followup';
+    }
+  }
+
+  async function loadLogs(){
+    const base = apiBase();
+    const list = $('logList');
+    if(!base){
+      list.innerHTML = '<div class="empty">Set the API URL above to load call outcomes.</div>';
+      return;
+    }
+    list.innerHTML = '<div class="empty">Loading…</div>';
+    try{
+      const res = await fetch(base + '/api/crm-logs');
+      const data = await res.json();
+      if(!data.logs || data.logs.length === 0){
+        list.innerHTML = '<div class="empty">No call outcomes logged yet.</div>';
+        return;
+      }
+      list.innerHTML = data.logs.map(row => `
+        <div class="log-row">
+          <div class="log-row-top">
+            <span class="log-name">${escapeHtml(row.customer_name || 'Unknown')}</span>
+            <span class="log-time">${escapeHtml((row.timestamp || '').replace('T',' ').slice(0,19))}</span>
+          </div>
+          <span class="pill ${pillClass(row.intent)}">${escapeHtml(row.intent || 'Unknown')}</span>
+          ${row.escalated ? '<span class="escalated-flag">● escalated</span>' : ''}
+          ${row.notes ? `<div class="log-notes">${escapeHtml(row.notes)}</div>` : ''}
+        </div>
+      `).join('');
+    }catch(err){
+      list.innerHTML = '<div class="empty">Could not reach the API. Check the URL and CORS/DASHBOARD_ORIGIN setting.</div>';
+    }
+  }
+  $('refreshLogs').addEventListener('click', loadLogs);
+
+  async function runKbSearch(){
+    const base = apiBase();
+    const query = $('kbQuery').value.trim();
+    const out = $('kbResult');
+    if(!base){ out.innerHTML = '<div class="empty">Set the API URL above first.</div>'; return; }
+    if(!query){ return; }
+    out.innerHTML = '<div class="empty">Searching…</div>';
+    try{
+      const res = await fetch(base + '/api/kb-search', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({query})
+      });
+      const data = await res.json();
+      if(data.grounded){
+        out.innerHTML = `
+          <div class="result-card grounded">
+            <div class="result-status"><span class="dot dot-teal"></span>Grounded</div>
+            <div class="result-body">${escapeHtml(data.content)}</div>
+            <div class="result-meta">source: ${escapeHtml(data.record_id)} · score ${data.score}</div>
+          </div>`;
+      } else {
+        out.innerHTML = `
+          <div class="result-card ungrounded">
+            <div class="result-status"><span class="dot dot-red"></span>Not grounded</div>
+            <div class="result-body">${escapeHtml(data.message)}</div>
+          </div>`;
+      }
+    }catch(err){
+      out.innerHTML = '<div class="empty">Could not reach the API.</div>';
+    }
+  }
+  $('kbSubmit').addEventListener('click', runKbSearch);
+  $('kbQuery').addEventListener('keydown', (e) => { if(e.key === 'Enter') runKbSearch(); });
+
+  async function runInsights(){
+    const base = apiBase();
+    const transcript = $('transcriptInput').value.trim();
+    const feed = $('nudgeFeed');
+    const latencyLine = $('latencyLine');
+    if(!base){ feed.innerHTML = '<div class="empty">Set the API URL above first.</div>'; return; }
+    if(!transcript){ return; }
+    latencyLine.textContent = 'analyzing…';
+    try{
+      const res = await fetch(base + '/api/insights', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({transcript})
+      });
+      const data = await res.json();
+      latencyLine.textContent = `latency ${data.latency_ms}ms · signals: ${(data.signals_detected||[]).join(', ') || 'none'}`;
+      if(!data.nudges || data.nudges.length === 0){
+        feed.innerHTML = '<div class="empty">No nudge triggered for this chunk (or it\'s within cooldown).</div>' + feed.innerHTML.replace('<div class="empty">No nudges yet — analyze a transcript chunk above.</div>', '');
+        return;
+      }
+      const cards = data.nudges.map(n => `
+        <div class="nudge-card">
+          <div class="nudge-top">
+            <span class="nudge-type">${escapeHtml(n.type.replace(/_/g,' '))}</span>
+            <span class="nudge-stamp">${escapeHtml((n.timestamp||'').replace('T',' ').slice(11,19))}</span>
+          </div>
+          <div class="nudge-msg">${escapeHtml(n.message)}</div>
+          <div class="nudge-conf">confidence ${n.confidence}</div>
+        </div>
+      `).join('');
+      const emptyState = feed.querySelector('.empty');
+      if(emptyState) emptyState.remove();
+      feed.insertAdjacentHTML('afterbegin', cards);
+    }catch(err){
+      feed.innerHTML = '<div class="empty">Could not reach the API.</div>';
+    }
+  }
+  $('insightSubmit').addEventListener('click', runInsights);
+
+  loadLogs();
+</script>
+
+</body>
+</html>
