@@ -15,8 +15,25 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("app")
 
 app = FastAPI(title="AI Voice Agent Orchestrator")
-kb = KnowledgeBaseEmbedder()
 monitor = LiveCallMonitor()
+
+# KnowledgeBaseEmbedder pulls in PyTorch + downloads a sentence-transformers
+# model — on a small instance that can be slow/memory-heavy enough to get
+# killed before uvicorn opens its port if done at import time. Load it lazily
+# on first actual use instead, so /health responds immediately and Render's
+# port scan succeeds right away.
+_kb = None
+
+
+def get_kb() -> KnowledgeBaseEmbedder:
+    global _kb
+    if _kb is None:
+        logger.info("Lazily initializing KnowledgeBaseEmbedder...")
+        _kb = KnowledgeBaseEmbedder()
+        _kb.ensure_collection()
+        logger.info("KnowledgeBaseEmbedder ready.")
+    return _kb
+
 
 # Dashboard (Vercel) origin(s) allowed to call this API — comma-separated.
 # Defaults to "*" for local dev; set DASHBOARD_ORIGIN in Render's env once
@@ -28,11 +45,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-async def startup():
-    kb.ensure_collection()
 
 
 @app.post("/vapi-knowledge-search")
@@ -60,7 +72,7 @@ async def vapi_knowledge_search(request: Request):
             ]
         }
 
-    match = kb.search_grounded_context(query)
+    match = get_kb().search_grounded_context(query)
 
     if match is None:
         # This exact string should also be referenced in the assistant's
@@ -142,7 +154,7 @@ async def get_crm_logs(limit: int = 50):
 async def api_kb_search(payload: KBSearchRequest):
     """Lets the dashboard test what the voice agent's kb_search tool would
     return for a given question, without needing a live call."""
-    match = kb.search_grounded_context(payload.query)
+    match = get_kb().search_grounded_context(payload.query)
     if match is None:
         return {"grounded": False, "message": "No verified reference found in the knowledge base."}
     return {"grounded": True, **match}
