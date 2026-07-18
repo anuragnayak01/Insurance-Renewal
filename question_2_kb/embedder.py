@@ -9,7 +9,6 @@ from typing import Optional
 
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qmodels
-from sentence_transformers import SentenceTransformer
 from rapidfuzz import fuzz
 
 from config import settings
@@ -43,6 +42,13 @@ class KnowledgeBaseEmbedder:
             api_key=settings.QDRANT_API_KEY or None,
         )
         self._seen_chunks: list[str] = []
+        # Deferred import: this is what actually pulls in PyTorch. Doing it
+        # here (inside __init__, called lazily by app.py's get_kb()) rather
+        # than at module level means a plain `import question_2_kb.embedder`
+        # elsewhere in the app — e.g. app.py's top-level import — stays
+        # cheap and doesn't risk OOM-killing the process before uvicorn
+        # binds its port.
+        from sentence_transformers import SentenceTransformer
         self.model = SentenceTransformer(settings.EMBEDDING_MODEL)
 
     def ensure_collection(self):
