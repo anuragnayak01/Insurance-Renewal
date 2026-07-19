@@ -8,7 +8,7 @@ requests==2.32.3
 rapidfuzz==3.9.7
 qdrant-client==1.11.3
 fastembed==0.3.6
-livekit-api==0.8.2
+livekit-api==1.2.0
 
 # LiveKit voice agent (self-hosted, replaces Vapi)
 # Pinned below 1.6.x: that version line made the turn-detector's native
@@ -16,6 +16,6 @@ livekit-api==0.8.2
 # spiking memory ~3.5GB just importing the package (livekit/agents#4869) —
 # even though we don't use turn detection (we use Silero VAD directly).
 livekit-agents==1.5.8
-livekit-plugins-deepgram
-livekit-plugins-openai
-livekit-plugins-silero
+livekit-plugins-deepgram==1.5.8
+livekit-plugins-openai==1.5.8
+livekit-plugins-silero==1.5.8
