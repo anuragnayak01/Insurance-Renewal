@@ -150,11 +150,4 @@ dashboard's Call Log panel to confirm `log_call_outcome` fired for each one.
 - Groq's free tier is rate-limited (30 req/min, 14,400 req/day) — fine for
   demo/test calls, would need the paid Developer tier for production volume.
 
-## Q3 & Q4 — Now Implemented
-- **Q3**: `question_3_localized/` with PH (Taglish) and ID (Bahasa) prompts. These
-  can be wired into `agent.py`'s `SYSTEM_PROMPT` per call, plus Deepgram's
-  language parameter for STT.
-- **Q4**: `question_4_insights/monitor.py` — streaming simulation, signal detection (objection, cross-sell, frustration, compliance), nudges with cooldown/dedup, latency tracking. Test with sample transcripts from Q1 calls.
-
-Full coverage achieved.
 
