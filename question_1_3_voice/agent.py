@@ -101,6 +101,11 @@ async def entrypoint(ctx: JobContext):
             model=settings.GROQ_MODEL,
             api_key=settings.GROQ_API_KEY,
             base_url="https://api.groq.com/openai/v1",
+            # Llama models on Groq can leak raw "<function=name>{...}</function>"
+            # syntax into the spoken response instead of using a proper
+            # structured tool call when parallel tool calling is enabled —
+            # forcing single-call mode fixes this reliably.
+            parallel_tool_calls=False,
         ),
         tts=deepgram.TTS(model="aura-2-thalia-en", api_key=settings.DEEPGRAM_API_KEY),
     )
