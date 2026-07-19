@@ -26,6 +26,7 @@
 | **Large Language Model (LLM)** | Groq (Llama 3.3 70B Versatile) | Handles reasoning and response generation |
 | **Voice Activity Detection (VAD)** | Silero | Runs locally; no API key required |
 
+
  
 
 ## Run sequence
