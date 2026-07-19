@@ -1,0 +1,10 @@
+[
+  {"speaker": "agent", "text": "Hi, this is Riya calling from the insurer about your policy renewal."},
+  {"speaker": "customer", "text": "I already told the last agent I'm not interested."},
+  {"speaker": "agent", "text": "I understand, I just wanted to quickly confirm your renewal date."},
+  {"speaker": "customer", "text": "This is such a hassle, I've been called three times this month already."},
+  {"speaker": "customer", "text": "Honestly it's getting annoying, can you people stop calling me."},
+  {"speaker": "agent", "text": "I'm sorry for the repeated calls, let me note that down."},
+  {"speaker": "customer", "text": "This is ridiculous, I want to speak to someone else."},
+  {"speaker": "agent", "text": "Understood, I'll arrange a callback from a specialist right away."}
+]

@@ -1,0 +1,10 @@
+[
+  {"speaker": "agent", "text": "Hi, this is Riya calling from the insurer regarding your policy renewal. Am I speaking with Mr. Sharma?"},
+  {"speaker": "customer", "text": "Yes, speaking."},
+  {"speaker": "agent", "text": "Great. Your auto policy is due for renewal next month. I wanted to check if you had any questions before we proceed."},
+  {"speaker": "customer", "text": "Actually, I recently bought a second car for my daughter. Does that change anything?"},
+  {"speaker": "agent", "text": "Noted, I'll make sure that's on file. Now, about the renewal terms for your existing vehicle..."},
+  {"speaker": "customer", "text": "Sure, go ahead."},
+  {"speaker": "agent", "text": "Your premium stays the same as last year assuming no claims were filed."},
+  {"speaker": "customer", "text": "Okay, that sounds fine to me."}
+]

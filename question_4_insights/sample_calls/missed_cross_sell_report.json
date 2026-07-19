@@ -1,0 +1,111 @@
+{
+  "call_name": "missed_cross_sell",
+  "asr_mode": "simulated",
+  "chunks": [
+    {
+      "chunk": 1,
+      "speaker": "agent",
+      "text": "Hi, this is Riya calling from the insurer regarding your policy renewal. Am I speaking with Mr. Sharma?",
+      "asr_ms": 250.0,
+      "signal_ms": 0.05,
+      "delivery_ms": 0.0,
+      "total_ms": 250.1,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 2,
+      "speaker": "customer",
+      "text": "Yes, speaking.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.04,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 3,
+      "speaker": "agent",
+      "text": "Great. Your auto policy is due for renewal next month. I wanted to check if you had any questions before we proceed.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.15,
+      "delivery_ms": 0.0,
+      "total_ms": 250.2,
+      "signals": [
+        "compliance_gap"
+      ],
+      "nudges": [
+        "Remind required disclosure before proceeding."
+      ]
+    },
+    {
+      "chunk": 4,
+      "speaker": "customer",
+      "text": "Actually, I recently bought a second car for my daughter. Does that change anything?",
+      "asr_ms": 250.0,
+      "signal_ms": 0.07,
+      "delivery_ms": 0.0,
+      "total_ms": 250.1,
+      "signals": [
+        "cross_sell_vehicle"
+      ],
+      "nudges": [
+        "Offer multi-vehicle discount now."
+      ]
+    },
+    {
+      "chunk": 5,
+      "speaker": "agent",
+      "text": "Noted, I'll make sure that's on file. Now, about the renewal terms for your existing vehicle...",
+      "asr_ms": 250.0,
+      "signal_ms": 0.03,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 6,
+      "speaker": "customer",
+      "text": "Sure, go ahead.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.03,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 7,
+      "speaker": "agent",
+      "text": "Your premium stays the same as last year assuming no claims were filed.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.04,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 8,
+      "speaker": "customer",
+      "text": "Okay, that sounds fine to me.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.04,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    }
+  ],
+  "latency_summary": {
+    "end_to_end_p50_ms": 250.0,
+    "end_to_end_p95_ms": 250.2,
+    "asr_p50_ms": 250.0,
+    "asr_p95_ms": 250.0,
+    "signal_p50_ms": 0.0,
+    "signal_p95_ms": 0.1
+  },
+  "total_nudges": 2
+}

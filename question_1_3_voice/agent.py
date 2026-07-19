@@ -24,6 +24,8 @@ Talk to it with zero frontend code via LiveKit's hosted testing UI:
     https://agents-playground.livekit.io  (sign in with your LiveKit Cloud project)
 """
 
+import os
+
 from dotenv import load_dotenv
 
 from livekit import agents
@@ -38,6 +40,21 @@ from question_2_kb.embedder import KnowledgeBaseEmbedder
 load_dotenv()
 
 kb = KnowledgeBaseEmbedder()
+
+# Q3 — locale selection. Set AGENT_LOCALE=ph or AGENT_LOCALE=id before
+# starting the agent to run the Taglish/Bahasa variant instead of English.
+# Deepgram's STT also needs a matching language hint, or it'll transcribe
+# non-English speech poorly.
+_LOCALE = os.getenv("AGENT_LOCALE", "en").lower()
+_DEEPGRAM_LANGUAGE = {"en": "en", "ph": "multi", "id": "multi"}.get(_LOCALE, "en")
+
+if _LOCALE == "ph":
+    from question_3_localized.ph_prompts import FIRST_MESSAGE_PH as FIRST_MESSAGE
+    from question_3_localized.ph_prompts import SYSTEM_PROMPT_PH as SYSTEM_PROMPT
+elif _LOCALE == "id":
+    from question_3_localized.id_prompts import FIRST_MESSAGE_ID as FIRST_MESSAGE
+    from question_3_localized.id_prompts import SYSTEM_PROMPT_ID as SYSTEM_PROMPT
+# else: keep the English SYSTEM_PROMPT/FIRST_MESSAGE already imported above
 
 
 @function_tool
@@ -75,7 +92,11 @@ async def entrypoint(ctx: JobContext):
 
     session = AgentSession(
         vad=silero.VAD.load(),
-        stt=deepgram.STT(model="nova-3", api_key=settings.DEEPGRAM_API_KEY),
+        stt=deepgram.STT(
+            model="nova-3",
+            language=_DEEPGRAM_LANGUAGE,
+            api_key=settings.DEEPGRAM_API_KEY,
+        ),
         llm=openai.LLM(
             model=settings.GROQ_MODEL,
             api_key=settings.GROQ_API_KEY,

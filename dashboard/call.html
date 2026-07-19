@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Talk to Riya — Renewal Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+<style>
+  :root{
+    --ink:#0D1117;
+    --panel:#141B24;
+    --hairline:#253140;
+    --paper:#DCE4EC;
+    --muted:#6B7A8C;
+    --teal:#3ECF8E;
+    --amber:#F0A63A;
+    --red:#E5484D;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .card{
+    width:420px;
+    max-width:92vw;
+    background:var(--panel);
+    border:1px solid var(--hairline);
+    border-radius:14px;
+    padding:32px 28px;
+    text-align:center;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    color:var(--muted);
+    text-transform:uppercase;
+  }
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:24px;
+    margin:6px 0 4px;
+  }
+  .sub{
+    font-size:13.5px;
+    color:var(--muted);
+    margin:0 0 28px;
+  }
+  .orb{
+    width:96px;
+    height:96px;
+    border-radius:50%;
+    margin:0 auto 24px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--ink);
+    border:1px solid var(--hairline);
+    position:relative;
+  }
+  .orb::after{
+    content:"";
+    position:absolute;
+    inset:14px;
+    border-radius:50%;
+    background:var(--muted);
+    opacity:0.25;
+  }
+  .orb.listening::after{
+    background:var(--teal);
+    opacity:0.55;
+    animation:pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ transform:scale(1); opacity:0.4; }
+    50%{ transform:scale(1.12); opacity:0.75; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .orb.listening::after{ animation:none; }
+  }
+  .status{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+    margin:0 0 20px;
+    min-height:16px;
+  }
+  .status.live{ color:var(--teal); }
+  .status.err{ color:var(--red); }
+  button{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    border:none;
+    border-radius:8px;
+    padding:12px 22px;
+    cursor:pointer;
+    width:100%;
+  }
+  button:focus-visible{ outline:2px solid var(--paper); outline-offset:2px; }
+  button[disabled]{ opacity:0.5; cursor:default; }
+  #startBtn{ background:var(--teal); color:#06251A; }
+  #startBtn:hover{ filter:brightness(1.08); }
+  #endBtn{ background:var(--red); color:#3D0A0A; }
+  #endBtn:hover{ filter:brightness(1.08); }
+  .note{
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:18px;
+    line-height:1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <span class="eyebrow">Renewal Desk</span>
+  <h1>Talk to Riya</h1>
+  <p class="sub">AI insurance renewal specialist — click below to start a live voice call</p>
+
+  <div class="orb" id="orb"></div>
+  <p class="status" id="status">Not connected</p>
+
+  <button id="startBtn" onclick="startCall()">Start call</button>
+  <button id="endBtn" onclick="endCall()" style="display:none;">End call</button>
+
+  <p class="note" id="apiNote">
+    Configure the API URL via <code>?api=https://your-render-url.onrender.com</code> in the page URL, or it defaults to same-origin.
+  </p>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const apiBase = params.get('api') || localStorage.getItem('renewalDeskApi') || '';
+
+  const orb = document.getElementById('orb');
+  const statusEl = document.getElementById('status');
+  const startBtn = document.getElementById('startBtn');
+  const endBtn = document.getElementById('endBtn');
+
+  let room = null;
+
+  function setStatus(text, cls){
+    statusEl.textContent = text;
+    statusEl.className = 'status' + (cls ? ' ' + cls : '');
+  }
+
+  async function startCall(){
+    if(!apiBase){
+      setStatus('No API URL configured — add ?api=... to the page URL', 'err');
+      return;
+    }
+    startBtn.disabled = true;
+    setStatus('Requesting access...');
+
+    try{
+      const res = await fetch(apiBase.replace(/\/$/, '') + '/api/call-token', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({identity: 'web-caller'})
+      });
+      const data = await res.json();
+      if(data.error){
+        setStatus(data.error, 'err');
+        startBtn.disabled = false;
+        return;
+      }
+
+      room = new LivekitClient.Room();
+
+      room.on(LivekitClient.RoomEvent.TrackSubscribed, (track) => {
+        if(track.kind === 'audio'){
+          const el = track.attach();
+          document.body.appendChild(el);
+          orb.classList.add('listening');
+        }
+      });
+
+      room.on(LivekitClient.RoomEvent.Disconnected, () => {
+        setStatus('Call ended', null);
+        orb.classList.remove('listening');
+        startBtn.style.display = 'block';
+        startBtn.disabled = false;
+        endBtn.style.display = 'none';
+      });
+
+      setStatus('Connecting...');
+      await room.connect(data.url, data.token);
+      await room.localParticipant.setMicrophoneEnabled(true);
+
+      setStatus('Live — Riya will join shortly', 'live');
+      startBtn.style.display = 'none';
+      endBtn.style.display = 'block';
+    }catch(err){
+      setStatus('Could not connect: ' + err.message, 'err');
+      startBtn.disabled = false;
+    }
+  }
+
+  function endCall(){
+    if(room){
+      room.disconnect();
+      room = null;
+    }
+  }
+</script>
+
+</body>
+</html>

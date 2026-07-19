@@ -1,0 +1,10 @@
+[
+  {"speaker": "agent", "text": "Hi, this is Riya calling about your loan pre-due reminder. Am I speaking with Ms. Fernandez?"},
+  {"speaker": "customer", "text": "Yes, that's me."},
+  {"speaker": "agent", "text": "Your installment is due in five days. Before we proceed, I want to walk you through the renewal terms."},
+  {"speaker": "customer", "text": "Okay, go ahead."},
+  {"speaker": "agent", "text": "The amount due is the same as last month, and late payment adds a small fee."},
+  {"speaker": "customer", "text": "Understood, I'll pay on time."},
+  {"speaker": "agent", "text": "Great, thanks for confirming. Anything else before we close?"},
+  {"speaker": "customer", "text": "No, that's all."}
+]

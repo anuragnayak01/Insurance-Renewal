@@ -1,0 +1,146 @@
+<svg viewBox="0 0 1400 1180" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>System architecture — Insurance Renewal AI Assessment</title>
+<desc>Diagram showing four connected subsystems: Q2 knowledge base ingestion pipeline feeding Qdrant Cloud, Q1/Q3 live voice call flow through LiveKit Cloud and the agent worker, Q4 live insights monitoring pulling from the call transcript stream, and the three-way deployment split across Render, Vercel, and local on-demand execution.</desc>
+
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#5A6472"/>
+  </marker>
+</defs>
+
+<rect width="1400" height="1180" fill="#FFFFFF"/>
+
+<text x="30" y="40" font-family="Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#12161C">Insurance Renewal AI — System Architecture</text>
+<text x="30" y="62" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#5A6472">Four subsystems (Q1-Q4) sharing one knowledge base and one deployment split</text>
+
+<!-- ============ SECTION: Q2 Knowledge Base Ingestion ============ -->
+<rect x="20" y="90" width="1360" height="190" rx="10" fill="#F0FAF6" stroke="#9FE1CB" stroke-width="1"/>
+<text x="40" y="115" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#085041">Q2 — Knowledge base ingestion (offline, run on demand)</text>
+
+<rect x="50" y="140" width="180" height="100" rx="8" fill="#FFFFFF" stroke="#5DCAA5" stroke-width="1.5"/>
+<text x="140" y="180" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#04342C">Raw sources</text>
+<text x="140" y="198" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">web pages, PDFs,</text>
+<text x="140" y="213" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">forms, tables</text>
+
+<rect x="290" y="140" width="220" height="100" rx="8" fill="#FFFFFF" stroke="#5DCAA5" stroke-width="1.5"/>
+<text x="400" y="165" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#04342C">parser.py</text>
+<text x="400" y="183" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">strip boilerplate, standardize</text>
+<text x="400" y="197" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">terminology/dates, mask PII,</text>
+<text x="400" y="211" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">flag extraction failures</text>
+
+<rect x="570" y="140" width="220" height="100" rx="8" fill="#FFFFFF" stroke="#5DCAA5" stroke-width="1.5"/>
+<text x="680" y="165" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#04342C">embedder.py</text>
+<text x="680" y="183" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">chunk, dedup (rapidfuzz),</text>
+<text x="680" y="197" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">embed via fastembed</text>
+<text x="680" y="211" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">(ONNX, no PyTorch)</text>
+
+<rect x="850" y="140" width="200" height="100" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+<text x="950" y="180" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#04342C">Qdrant Cloud</text>
+<text x="950" y="198" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">vector DB, free tier</text>
+<text x="950" y="213" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">source-traceable records</text>
+
+<line x1="230" y1="190" x2="285" y2="190" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="510" y1="190" x2="565" y2="190" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="790" y1="190" x2="845" y2="190" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- ============ SECTION: Q1/Q3 Live Voice Call ============ -->
+<rect x="20" y="300" width="1360" height="330" rx="10" fill="#EEF4FC" stroke="#85B7EB" stroke-width="1"/>
+<text x="40" y="325" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#0C447C">Q1 / Q3 — Live voice call (agent.py, run on demand — see deployment note below)</text>
+
+<rect x="50" y="360" width="190" height="90" rx="8" fill="#FFFFFF" stroke="#378ADD" stroke-width="1.5"/>
+<text x="145" y="395" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#042C53">Customer</text>
+<text x="145" y="413" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">Agents Playground or</text>
+<text x="145" y="426" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">dashboard/call.html widget</text>
+
+<rect x="290" y="360" width="190" height="90" rx="8" fill="#FFFFFF" stroke="#378ADD" stroke-width="1.5"/>
+<text x="385" y="395" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#042C53">LiveKit Cloud</text>
+<text x="385" y="413" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">WebRTC orchestration,</text>
+<text x="385" y="426" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">room + auto-dispatch</text>
+
+<rect x="530" y="345" width="320" height="120" rx="8" fill="#FFFFFF" stroke="#185FA5" stroke-width="2"/>
+<text x="690" y="368" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#042C53">Agent worker — question_1_3_voice/agent.py</text>
+<text x="555" y="390" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">VAD: Silero (local)</text>
+<text x="555" y="406" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">STT: Deepgram nova-3</text>
+<text x="555" y="422" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">LLM: Groq llama-3.3-70b</text>
+<text x="555" y="438" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">TTS: Deepgram Aura-2</text>
+<text x="750" y="390" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">Locale: AGENT_LOCALE</text>
+<text x="750" y="406" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">env var (en/ph/id)</text>
+<text x="750" y="422" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">Tools: kb_search,</text>
+<text x="750" y="438" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">log_call_outcome</text>
+
+<rect x="920" y="345" width="180" height="70" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.5"/>
+<text x="1010" y="375" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#04342C">Qdrant Cloud</text>
+<text x="1010" y="392" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">kb_search tool call</text>
+
+<rect x="920" y="430" width="180" height="70" rx="8" fill="#FFFFFF" stroke="#378ADD" stroke-width="1.5"/>
+<text x="1010" y="460" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#042C53">crm_log.jsonl</text>
+<text x="1010" y="477" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">log_call_outcome tool</text>
+
+<line x1="240" y1="405" x2="285" y2="405" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="285" y1="418" x2="240" y2="418" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="480" y1="405" x2="525" y2="405" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="525" y1="418" x2="480" y2="418" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="850" y1="385" x2="915" y2="380" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="850" y1="425" x2="915" y2="460" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- transcript stream out to Q4 -->
+<rect x="530" y="510" width="320" height="60" rx="8" fill="#FFF7EC" stroke="#EF9F27" stroke-width="1.5"/>
+<text x="690" y="533" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="700" fill="#412402">Transcript stream</text>
+<text x="690" y="550" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">chunked, real-time paced — feeds Q4</text>
+<line x1="690" y1="465" x2="690" y2="505" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- ============ SECTION: Q4 Live Insights ============ -->
+<rect x="20" y="650" width="1360" height="180" rx="10" fill="#FFF7EC" stroke="#FAC775" stroke-width="1"/>
+<text x="40" y="675" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#633806">Q4 — Live insights (question_4_insights/)</text>
+
+<rect x="530" y="700" width="220" height="100" rx="8" fill="#FFFFFF" stroke="#BA7517" stroke-width="1.5"/>
+<text x="640" y="725" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#412402">LiveCallMonitor</text>
+<text x="640" y="743" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">signal detection +</text>
+<text x="640" y="757" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">30s cooldown / dedup</text>
+<text x="640" y="774" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">simulate_call.py = latency test</text>
+
+<line x1="690" y1="570" x2="640" y2="695" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="850" y="700" width="220" height="100" rx="8" fill="#FFFFFF" stroke="#BA7517" stroke-width="1.5"/>
+<text x="960" y="730" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="700" fill="#412402">Nudges</text>
+<text x="960" y="748" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">delivered via /api/insights</text>
+<text x="960" y="762" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#5A6472">to dashboard nudge feed</text>
+
+<line x1="750" y1="750" x2="845" y2="750" stroke="#5A6472" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<!-- ============ SECTION: Deployment ============ -->
+<rect x="20" y="850" width="1360" height="310" rx="10" fill="#F4F4F1" stroke="#B4B2A9" stroke-width="1"/>
+<text x="40" y="875" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#2C2C2A">Deployment — three genuinely-free-tier pieces, split by what each actually needs</text>
+
+<rect x="50" y="900" width="400" height="220" rx="8" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1.5"/>
+<text x="250" y="930" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#2C2C2A">Render (Web Service, free)</text>
+<text x="70" y="955" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">app.py — request/response only, spins</text>
+<text x="70" y="971" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">down on idle, wakes on request</text>
+<text x="70" y="995" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">• /api/crm-logs, /api/kb-search,</text>
+<text x="70" y="1011" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">  /api/insights, /api/call-token</text>
+<text x="70" y="1035" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">• mints LiveKit join tokens for the</text>
+<text x="70" y="1051" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">  web-calling widget</text>
+<text x="70" y="1075" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">• lazy KB init — avoids loading fastembed</text>
+<text x="70" y="1091" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">  until first real request (512MB limit)</text>
+
+<rect x="500" y="900" width="400" height="220" rx="8" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1.5"/>
+<text x="700" y="930" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#2C2C2A">Vercel (static hosting, free)</text>
+<text x="520" y="955" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">dashboard/ — zero build step</text>
+<text x="520" y="985" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">• index.html — ops console</text>
+<text x="520" y="1001" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">  (call log, KB tester, nudge feed)</text>
+<text x="520" y="1025" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">• call.html — public web-calling widget</text>
+<text x="520" y="1041" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">  (LiveKit JS client, no login needed)</text>
+
+<rect x="950" y="900" width="400" height="220" rx="8" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1.5"/>
+<text x="1150" y="930" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#2C2C2A">Local / on-demand (agent.py)</text>
+<text x="970" y="955" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">question_1_3_voice/agent.py</text>
+<text x="970" y="980" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">Run only when testing/recording — no</text>
+<text x="970" y="996" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">platform in 2026 offers genuinely</text>
+<text x="970" y="1012" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">free + no-card + always-on hosting for</text>
+<text x="970" y="1028" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">a persistent-connection worker — and</text>
+<text x="970" y="1044" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">this assessment doesn't need 24/7</text>
+<text x="970" y="1060" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">availability, only recorded test calls.</text>
+<text x="970" y="1084" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">Dockerfile.agent + fly.toml kept in repo</text>
+<text x="970" y="1100" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#5A6472">for future always-on deploy if needed.</text>
+
+</svg>

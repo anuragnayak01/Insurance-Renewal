@@ -1,5 +1,7 @@
 # AI Engineer Assessment — Q1+Q2+Q3+Q4 (100% FREE, self-hosted voice stack)
 
+![Architecture](docs/architecture.svg)
+
 ## What's built
 - **Q2 knowledge base**: `question_2_kb/parser.py` (extraction + cleaning + PII
   masking), `question_2_kb/embedder.py` (chunking, dedup, Qdrant Cloud upsert,
@@ -51,10 +53,30 @@ Check `retrieval_tests/retrieval_test_log.md` — fill in the relevance/verdict
 lines by eye. Replace `SAMPLE_DOCS` in `seed_ingest.py` with your real
 scraped/PDF content before final submission.
 
-### 3. Run the voice agent locally
+### 3. Run the voice agent — on demand, not 24/7
+
+The agent doesn't need to run continuously in the cloud. LiveKit workers must
+already be connected to receive a call in real time, but the only thing this
+project actually needs that for is **recording the 5 required test calls**
+(step 8) — a manual, one-person-at-a-time activity, not a public service.
+
+Run it locally whenever you're about to test or record:
 ```bash
 python -m question_1_3_voice.agent dev
 ```
+Leave that terminal open, use the Agents Playground (step 5) to talk to it,
+then stop it when you're done. No hosting, no card, no ongoing cost — every
+"always-on worker" hosting option in 2026 either requires a card (Oracle
+Cloud) or reverts to a real monthly cost after a short trial (Railway, Fly,
+Render Background Workers), so it's not worth paying that price for a
+requirement this project doesn't actually have.
+
+If you later want a genuinely public, always-reachable agent (e.g. a real
+phone number people can call anytime), that's a different problem — it needs
+both an always-connected worker *and* telephony (Twilio/SIP), neither of
+which has a free-forever no-card option. `Dockerfile.agent` and `fly.toml`
+are kept in this repo in case you want that later; they're not required for
+anything the assessment asks for.
 
 ### 4. Optional: run the FastAPI KB service
 `app.py` still exposes the KB over HTTP (`/vapi-knowledge-search`,
@@ -71,14 +93,15 @@ open https://agents-playground.livekit.io, sign in with the same LiveKit
 Cloud project, and start talking. This is LiveKit's own hosted testing UI —
 free, zero code.
 
-### 6. Deploy — three services, all free tier
+### 6. Deploy — two services need to be always reachable; the agent doesn't
 
-This project splits into three independently deployable pieces:
+Only the pieces a reviewer might check independently, at any time, need to
+be deployed. The agent (step 3) runs on-demand locally, so it's not in this
+table — see step 3 for why.
 
 | Piece | What it is | Where | Why there |
 |---|---|---|---|
 | `app.py` | FastAPI — dashboard API + optional HTTP KB access | **Render** (Web Service, free) | Free tier covers Web Services (spins down after 15 min idle, wakes on request — fine for a dashboard API) |
-| `question_1_3_voice/agent.py` | LiveKit voice agent worker | **Fly.io** (free allowance) | Render's free tier does *not* cover Background Workers (~$7/mo minimum there); Fly.io's free tier does cover small always-on VMs, which this needs since it holds a persistent connection to LiveKit Cloud rather than responding to HTTP requests |
 | `dashboard/index.html` | Static ops console | **Vercel** (static hosting, free) | Zero build step, plain HTML/CSS/JS |
 
 **6a. `app.py` → Render**
@@ -86,35 +109,34 @@ This project splits into three independently deployable pieces:
 - Build: `pip install -r requirements.txt`
 - Start: `uvicorn app:app --host 0.0.0.0 --port $PORT`
 - Env vars: `QDRANT_URL`, `QDRANT_API_KEY`, `COLLECTION_NAME`
-- Once you have your Vercel URL (step 6c), add `DASHBOARD_ORIGIN=https://your-dashboard.vercel.app` so CORS only allows your dashboard
+- Once you have your Vercel URL (step 6b), add `DASHBOARD_ORIGIN=https://your-dashboard.vercel.app` so CORS only allows your dashboard
 
-**6b. `question_1_3_voice/agent.py` → Fly.io**
-```bash
-# install flyctl, then:
-fly launch --no-deploy   # uses fly.toml already in this repo, pick a unique app name
-fly secrets set QDRANT_URL=... QDRANT_API_KEY=... GROQ_API_KEY=... DEEPGRAM_API_KEY=... LIVEKIT_URL=... LIVEKIT_API_KEY=... LIVEKIT_API_SECRET=...
-fly deploy
-```
-This builds `Dockerfile.agent` and runs the worker continuously.
-
-**6c. `dashboard/index.html` → Vercel**
+**6b. `dashboard/index.html` → Vercel**
 ```bash
 cd dashboard
 vercel deploy --prod
 ```
 Or drag the `dashboard/` folder into the Vercel dashboard. No build settings needed — it's a static file. Once deployed, open it, paste your Render API URL into the "API" field at the top, hit Save — it persists in the browser.
 
+**If you ever want the agent always-on and cloud-hosted too** (not required
+for this assessment — see step 3): `Dockerfile.agent` and `fly.toml` are
+still in this repo. Every "always-on worker" host checked in 2026 either
+requires a card (Oracle Cloud "Always Free") or reverts to a real monthly
+cost after a short trial (Railway's $5 one-time credit, Fly.io's trial,
+Render's paid-only Background Workers) — there's currently no free-forever,
+zero-card option for a persistent-connection worker specifically.
+
 ### 7. Talk to the agent — no extra frontend needed
-With the Fly.io worker running and connected to your LiveKit Cloud project,
-open https://agents-playground.livekit.io, sign in with the same LiveKit
-Cloud project, and start talking.
+With the agent running locally (step 3) and connected to your LiveKit Cloud
+project, open https://agents-playground.livekit.io, sign in with the same
+LiveKit Cloud project, and start talking.
 
 ### 8. Record the required test calls
 Follow `test_calls/test_scenarios.md` — 5 scripts (cooperative, objection,
-incomplete/conflicting, out-of-scope, human-request). Use the Agents
-Playground to run and record them, paste transcripts, and fill in the
-verdict table in that file. Check the Vercel dashboard's Call Log panel to
-confirm `log_call_outcome` fired for each one.
+incomplete/conflicting, out-of-scope, human-request). Run the agent locally
+(step 3), use the Agents Playground to run and record them, paste
+transcripts, and fill in the verdict table in that file. Check the Vercel
+dashboard's Call Log panel to confirm `log_call_outcome` fired for each one.
 
 ## Known compromises (documented for the review, not hidden)
 - Dedup is in-memory per ingestion run, not against the full Qdrant

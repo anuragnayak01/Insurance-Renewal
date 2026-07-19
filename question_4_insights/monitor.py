@@ -23,13 +23,19 @@ class LiveCallMonitor:
     def detect_signals(self, transcript: str) -> list[str]:
         text = transcript.lower()
         signals = []
-        if any(kw in text for kw in ["expensive", "mahal", "switch", "mahal", "ganti"]):
+        if any(kw in text for kw in ["expensive", "mahal", "switch", "ganti", "too much", "can't afford"]):
             signals.append("price_objection")
-        if any(kw in text for kw in ["second vehicle", "another car", "mobil lain", "kendaraan kedua"]):
+        if any(kw in text for kw in ["second vehicle", "another car", "mobil lain", "kendaraan kedua", "second car", "another policy"]):
             signals.append("cross_sell_vehicle")
-        if any(kw in text for kw in ["frustrated", "hassle", "annoyed", "susah", "kesal"]):
+        if any(kw in text for kw in ["frustrated", "hassle", "annoyed", "susah", "kesal", "ridiculous", "fed up"]):
             signals.append("rising_frustration")
-        if "disclosure" not in text and "important" in text:  # simplistic compliance
+        if any(kw in text for kw in ["lose my job", "lost my job", "can't pay", "cannot pay", "behind on payment", "financial difficulty", "kehilangan pekerjaan"]):
+            signals.append("payment_difficulty")
+        if "disclosure" not in text and any(kw in text for kw in ["important", "before we proceed", "before we continue"]):
+            # Simplistic compliance heuristic: agent is about to move forward on
+            # something flagged "important" without the word "disclosure" ever
+            # appearing nearby — a real implementation would check this against
+            # a required-disclosure checklist per call type, not a keyword gap.
             signals.append("compliance_gap")
         return signals
 
@@ -39,6 +45,7 @@ class LiveCallMonitor:
             "cross_sell_vehicle": "Offer multi-vehicle discount now.",
             "rising_frustration": "Acknowledge concern and offer callback.",
             "compliance_gap": "Remind required disclosure before proceeding.",
+            "payment_difficulty": "Offer an approved payment-support or callback path.",
         }
         return Nudge(
             type=signal,

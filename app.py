@@ -1,12 +1,16 @@
 import json
 import logging
 import os
+import uuid
+from datetime import timedelta
 from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from livekit import api as lk_api
 from pydantic import BaseModel
 
+from config import settings
 from question_2_kb.embedder import KnowledgeBaseEmbedder
 from question_1_3_voice.mock_crm import CRM_LOG_PATH, log_outcome
 from question_4_insights.monitor import LiveCallMonitor
@@ -18,8 +22,8 @@ app = FastAPI(title="AI Voice Agent Orchestrator")
 monitor = LiveCallMonitor()
 
 # KnowledgeBaseEmbedder downloads a fastembed (ONNX) model on first use —
-# model — on a small instance that can be slow/memory-heavy enough to get
-# killed before uvicorn opens its port if done at import time. Load it lazily
+# on a small instance that can be slow/memory-heavy enough to get killed
+# before uvicorn opens its port if done at import time. Load it lazily
 # on first actual use instead, so /health responds immediately and Render's
 # port scan succeeds right away.
 _kb = None
@@ -165,3 +169,46 @@ async def api_insights(payload: InsightRequest):
     """Runs a transcript chunk through the Q4 live-call monitor and returns
     any nudges it would surface — same logic the real-time pipeline uses."""
     return monitor.process_transcript_chunk(payload.transcript)
+
+
+class CallTokenRequest(BaseModel):
+    identity: str = "web-caller"
+
+
+@app.post("/api/call-token")
+async def api_call_token(payload: CallTokenRequest):
+    """Q1's 'web calling interface' requirement — mints a short-lived
+    LiveKit room-join token so anyone visiting dashboard/call.html can talk
+    to the voice agent directly, without needing a LiveKit Cloud login.
+    The agent worker (question_1_3_voice/agent.py) uses automatic dispatch,
+    so it joins any new room on its own — no explicit dispatch call needed
+    here, just a token for a fresh room.
+    """
+    if not (settings.LIVEKIT_API_KEY and settings.LIVEKIT_API_SECRET and settings.LIVEKIT_URL):
+        return {
+            "error": (
+                "LIVEKIT_URL / LIVEKIT_API_KEY / LIVEKIT_API_SECRET are not "
+                "set on this server — add them in Render's Environment tab."
+            )
+        }
+
+    room_name = f"call-{uuid.uuid4().hex[:10]}"
+    identity = f"{payload.identity}-{uuid.uuid4().hex[:6]}"
+
+    token = (
+        lk_api.AccessToken(settings.LIVEKIT_API_KEY, settings.LIVEKIT_API_SECRET)
+        .with_identity(identity)
+        .with_name(payload.identity)
+        .with_grants(
+            lk_api.VideoGrants(
+                room_join=True,
+                room=room_name,
+                can_publish=True,
+                can_subscribe=True,
+            )
+        )
+        .with_ttl(timedelta(minutes=30))
+        .to_jwt()
+    )
+
+    return {"token": token, "url": settings.LIVEKIT_URL, "room": room_name}

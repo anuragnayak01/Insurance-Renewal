@@ -1,0 +1,10 @@
+[
+  {"speaker": "agent", "text": "Hi, this is Riya calling from the insurer regarding your policy renewal."},
+  {"speaker": "customer", "text": "Sorry, can you repeat that, the line is breaking up."},
+  {"speaker": "agent", "text": "Sure — I'm calling about your policy renewal, is now a good time?"},
+  {"speaker": "customer", "text": "Um, yeah I think so, hold on, my kid is asking me something."},
+  {"speaker": "customer", "text": "Okay sorry, I'm back. What was the question again?"},
+  {"speaker": "agent", "text": "No problem. Your renewal date is coming up next month, just confirming your details are current."},
+  {"speaker": "customer", "text": "Yeah I think everything is the same, nothing has changed on my end."},
+  {"speaker": "agent", "text": "Great, that's all I needed. Have a good day."}
+]

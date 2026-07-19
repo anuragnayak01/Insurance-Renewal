@@ -5,8 +5,9 @@ details; out-of-scope question; human-assistance request. Record at least 3
 calls total, but these 5 scripts give full coverage — record all 5 if time
 allows, otherwise pick the 3 most distinct (cooperative, objection, escalation).
 
-For each call: place it via the Vapi web call widget or the assigned phone
-number, then paste the transcript below and fill in the result/verdict.
+For each call: run the agent locally (`python -m question_1_3_voice.agent dev`),
+connect via the Agents Playground (agents-playground.livekit.io), then paste
+the transcript below and fill in the result/verdict.
 
 ---
 

@@ -1,0 +1,107 @@
+{
+  "call_name": "skipped_disclosure",
+  "asr_mode": "simulated",
+  "chunks": [
+    {
+      "chunk": 1,
+      "speaker": "agent",
+      "text": "Hi, this is Riya calling about your loan pre-due reminder. Am I speaking with Ms. Fernandez?",
+      "asr_ms": 250.0,
+      "signal_ms": 0.03,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 2,
+      "speaker": "customer",
+      "text": "Yes, that's me.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.03,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 3,
+      "speaker": "agent",
+      "text": "Your installment is due in five days. Before we proceed, I want to walk you through the renewal terms.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.08,
+      "delivery_ms": 0.0,
+      "total_ms": 250.1,
+      "signals": [
+        "compliance_gap"
+      ],
+      "nudges": [
+        "Remind required disclosure before proceeding."
+      ]
+    },
+    {
+      "chunk": 4,
+      "speaker": "customer",
+      "text": "Okay, go ahead.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.03,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 5,
+      "speaker": "agent",
+      "text": "The amount due is the same as last month, and late payment adds a small fee.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.05,
+      "delivery_ms": 0.0,
+      "total_ms": 250.1,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 6,
+      "speaker": "customer",
+      "text": "Understood, I'll pay on time.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.03,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 7,
+      "speaker": "agent",
+      "text": "Great, thanks for confirming. Anything else before we close?",
+      "asr_ms": 250.0,
+      "signal_ms": 0.04,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 8,
+      "speaker": "customer",
+      "text": "No, that's all.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.03,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    }
+  ],
+  "latency_summary": {
+    "end_to_end_p50_ms": 250.0,
+    "end_to_end_p95_ms": 250.1,
+    "asr_p50_ms": 250.0,
+    "asr_p95_ms": 250.0,
+    "signal_p50_ms": 0.0,
+    "signal_p95_ms": 0.1
+  },
+  "total_nudges": 1
+}

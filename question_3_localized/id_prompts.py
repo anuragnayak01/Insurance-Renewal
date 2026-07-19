@@ -14,5 +14,3 @@ Dukung Bahasa Indonesia formal/kolokial + English loanwords. Tone sopan, jelas.
 3. Gunakan kb_search untuk info produk.
 4. Istilah lokal: cicilan, tenor, denda, angsuran, jatuh tempo.
 """
-
-print("ID prompts ready")

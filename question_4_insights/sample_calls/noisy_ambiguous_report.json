@@ -1,0 +1,103 @@
+{
+  "call_name": "noisy_ambiguous",
+  "asr_mode": "simulated",
+  "chunks": [
+    {
+      "chunk": 1,
+      "speaker": "agent",
+      "text": "Hi, this is Riya calling from the insurer regarding your policy renewal.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.03,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 2,
+      "speaker": "customer",
+      "text": "Sorry, can you repeat that, the line is breaking up.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.04,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 3,
+      "speaker": "agent",
+      "text": "Sure \u2014 I'm calling about your policy renewal, is now a good time?",
+      "asr_ms": 250.0,
+      "signal_ms": 0.04,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 4,
+      "speaker": "customer",
+      "text": "Um, yeah I think so, hold on, my kid is asking me something.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.03,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 5,
+      "speaker": "customer",
+      "text": "Okay sorry, I'm back. What was the question again?",
+      "asr_ms": 250.0,
+      "signal_ms": 0.04,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 6,
+      "speaker": "agent",
+      "text": "No problem. Your renewal date is coming up next month, just confirming your details are current.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.03,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 7,
+      "speaker": "customer",
+      "text": "Yeah I think everything is the same, nothing has changed on my end.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.03,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    },
+    {
+      "chunk": 8,
+      "speaker": "agent",
+      "text": "Great, that's all I needed. Have a good day.",
+      "asr_ms": 250.0,
+      "signal_ms": 0.03,
+      "delivery_ms": 0.0,
+      "total_ms": 250.0,
+      "signals": [],
+      "nudges": []
+    }
+  ],
+  "latency_summary": {
+    "end_to_end_p50_ms": 250.0,
+    "end_to_end_p95_ms": 250.0,
+    "asr_p50_ms": 250.0,
+    "asr_p95_ms": 250.0,
+    "signal_p50_ms": 0.0,
+    "signal_p95_ms": 0.0
+  },
+  "total_nudges": 0
+}

@@ -50,7 +50,7 @@ DATE_PATTERNS = [
 
 PII_PATTERNS = {
     "policy_id": re.compile(r"\b[A-Z]{2}-\d{4}-\d{5,8}\b"),
-    "phone_in": re.compile(r"\b(?:\+91[-\s]?)?[6-9]\d{9}\b"),
+    "phone_in": re.compile(r"(?<!\d)\+91[-\s]?[6-9]\d{9}\b|\b[6-9]\d{9}\b"),
     "phone_generic": re.compile(r"\b\+?1?\d{10}\b"),
     "email": re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b"),
     "card_or_account": re.compile(r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{0,4}\b"),

@@ -21,5 +21,3 @@ Handle English, Tagalog, and natural Taglish. Stay polite, helpful, and complian
 """
 
 # Tool schemas same as Q1 but point to same webhook or language-aware.
-
-print("PH prompts ready")
