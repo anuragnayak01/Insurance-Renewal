@@ -1,0 +1,2 @@
+{"timestamp": "2026-07-19T03:16:03.844830+00:00", "customer_name": "{customer_name}", "intent": "", "escalated": false, "notes": ""}
+{"timestamp": "2026-07-19T03:17:26.700738+00:00", "customer_name": "Rugneck", "intent": "Needs follow-up", "escalated": true, "notes": "Customer requested transfer to specialist for payment options"}
