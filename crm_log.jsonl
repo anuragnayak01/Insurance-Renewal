@@ -1,2 +1,2 @@
- {"timestamp": "2026-07-19T07:57:28.293083+00:00", "customer_name": "Ragh Nayak", "intent": "Needs follow-up", "escalated": false, "notes": "Customer acknowledged renewal due date and grace period."}
+{"timestamp": "2026-07-19T07:57:28.293083+00:00", "customer_name": "Ragh Nayak", "intent": "Needs follow-up", "escalated": false, "notes": "Customer acknowledged renewal due date and grace period."}
 {"timestamp": "2026-07-19T07:57:46.162836+00:00", "customer_name": "Riya", "intent": "Already renewed", "escalated": false, "notes": "Customer confirmed renewal completion."}
