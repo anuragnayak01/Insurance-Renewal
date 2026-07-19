@@ -2,6 +2,10 @@
 Free-tier cloud version - Qdrant Cloud + fastembed (local, free, ONNX-based embeddings)
 """
 
+import sys
+ 
+sys.setrecursionlimit(5000)
+
 import uuid
 import logging
 from dataclasses import dataclass, asdict
