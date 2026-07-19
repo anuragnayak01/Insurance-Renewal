@@ -14,14 +14,17 @@
 - **Test evidence templates**: `retrieval_tests/run_retrieval_tests.py` (Q2's
   5-query log) and `test_calls/test_scenarios.md` (Q1's 5 call scripts).
 
- | Layer | Provider |  
-|---|---|---|
-| Vector DB | Qdrant Cloud |  
-| Embeddings | sentence-transformers |  
-| Voice orchestration | LiveKit Cloud (Build tier) |  
-| STT + TTS | Deepgram (nova-3 + Aura-2) |  
-| LLM | Groq (llama-3.3-70b-versatile) | 
-| VAD | Silero | runs locally, no key |
+## Tech Stack
+
+| Layer | Technology / Provider | Notes |
+|-------|------------------------|-------|
+| **Vector Database** | Qdrant Cloud | Stores and retrieves vector embeddings |
+| **Embeddings** | sentence-transformers | Generates semantic embeddings |
+| **Voice Orchestration** | LiveKit Cloud (Build Tier) | Manages real-time audio streaming and sessions |
+| **Speech-to-Text (STT)** | Deepgram (Nova-3) | Converts speech to text |
+| **Text-to-Speech (TTS)** | Deepgram (Aura-2) | Generates natural-sounding speech |
+| **Large Language Model (LLM)** | Groq (Llama 3.3 70B Versatile) | Handles reasoning and response generation |
+| **Voice Activity Detection (VAD)** | Silero | Runs locally; no API key required |
 
  
 
@@ -84,9 +87,6 @@ free, zero code.
 cd dashboard
 vercel deploy --prod
 ```
-Or drag the `dashboard/` folder into the Vercel dashboard. No build settings needed — it's a static file. Once deployed, open it, paste your Render API URL into the "API" field at the top, hit Save — it persists in the browser.
-
  
-
   
 
